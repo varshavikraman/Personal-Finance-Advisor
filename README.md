@@ -32,14 +32,19 @@ It combines automation, data visualization, and financial insights to help users
 ---
 
 ## ⚙️ Steps to Run the Application
+### Prerequisites
+
+Make sure you have Docker installed on your system
+
+### 🔧Installation
 
 1. **Clone the Repository:**  
 
     ```bash
-        git@github.com:varshavikraman/Personal-Finance-Advisor.git
+        git clone git@github.com:varshavikraman/Personal-Finance-Advisor.git
     ```
 
-1. **Navigate to the Project Directory:**  
+2. **Navigate to the Project Directory:**  
 
     ```bash
         cd SaveSage:Personal-Finance-Advisor
@@ -53,19 +58,21 @@ It combines automation, data visualization, and financial insights to help users
     ```bash
         PORT=<Port_no>
 
-        SECRET_KEY=<any_name>
+        SECRET_KEY=<your_jwt_secret_key_here>
 
         NODE_ENV=production
     ```
  
 
-3. **Docker Setup:**  
+4. **Docker Setup:** 
+
+    - Build & Run the Containers
 
     ```bash
         docker compose up --build
     ```
 
-4. **Access the Application:**  
+5. **Access the Application:**  
 
    - Once the containers are up, open your browser and visit: 
 
@@ -73,6 +80,13 @@ It combines automation, data visualization, and financial insights to help users
         http://localhost:3838
     ``` 
 
+6. **Stopping the Docker Containers:**
+
+    - Stop and remove all services defined docker-compose.yaml file
+
+    ```bash
+        docker compose down
+    ```
 ---
 
 ## 📺 Demo Video Link
