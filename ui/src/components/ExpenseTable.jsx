@@ -94,7 +94,7 @@ import {toast} from 'react-toastify'
             <tbody className="text-gray-700">
               {filteredExpenses.map((expense) => (
                 <tr key={expense._id} className="border-t">
-                    <td className="px-4 py-4 sm:px-6">{expense.date}</td>
+                    <td className="px-4 py-4 sm:px-6">{new Date(expense.date).toLocaleDateString()}</td>
                     <td className="px-4 py-4 sm:px-6">{expense.category}</td>
                     <td className="px-4 py-4 sm:px-6">₹{expense.amount}</td>
                     <td className="px-4 py-4 space-x-2">

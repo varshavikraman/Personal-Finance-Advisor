@@ -8,6 +8,15 @@ budgetRoute.post('/setBudget', async (req, res) => {
     const Email = req.email;
     const { Category, Limit, Month } = req.body;
 
+    const currentMonth = new Date().toISOString().slice(0, 7); 
+    const requestedMonth = Month.slice(0, 7);
+
+    if (requestedMonth < currentMonth) {
+      return res.status(400).json({
+        message: "You cannot add a budget for a past month.",
+      });
+    }
+
     let userAccount = await Account.findOne({ email: Email });
 
     if (!userAccount) {

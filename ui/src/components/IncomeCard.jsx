@@ -2,8 +2,8 @@ import React from 'react';
 import { Link } from "react-router-dom";
 import { toast } from 'react-toastify';
 
-const IncomeCard = ({ incomeData, showButton = false }) => {
-  const { Income, AllocatedBudget, AllocatedGoal, AllocatedSavings } = incomeData;
+const IncomeCard = ({ incomeData, showButton = false, triggerRefresh }) => {
+  const { Income, AllocatedBudget, CurrentGoal, CurrentSavings } = incomeData;
 
   const handleGoalAllocate = async () => {
     try {
@@ -17,7 +17,7 @@ const IncomeCard = ({ incomeData, showButton = false }) => {
       if (!res.ok) throw new Error(data.message || "Failed to reconcile month");
 
       toast.success(data.message);
-      console.log("Updated goals:", data.goals);
+      triggerRefresh(); 
 
     } catch (error) {
       console.error("Error reconciling month:", error);
@@ -36,7 +36,7 @@ const IncomeCard = ({ incomeData, showButton = false }) => {
     if (!res.ok) throw new Error(data.message || "Failed to add monthly savings");
 
     toast.success(data.message);
-    console.log("Updated savings:", data.savings);
+    triggerRefresh();
 
   } catch (error) {
     console.error("Error adding monthly savings:", error);
@@ -57,19 +57,19 @@ const IncomeCard = ({ incomeData, showButton = false }) => {
         
       </div>
       <div className="border border-gray-300 p-6 rounded-xl shadow hover:shadow-lg transition duration-300">
-        <p className="font-bold text-xl text-yellow-700 capitalize">Budget</p>
+        <p className="font-bold text-xl text-yellow-700 capitalize">Allocated Budget</p>
         <p className="my-4 text-gray-800 font-semibold">₹ {AllocatedBudget}</p>
       </div>
       <div className="border border-gray-300 p-6 rounded-xl shadow hover:shadow-lg transition duration-300">
         <p className="font-bold text-xl text-yellow-700 capitalize">Goal</p>
-        <p className="my-4 text-gray-800 font-semibold">₹ {AllocatedGoal}</p>
+        <p className="my-4 text-gray-800 font-semibold">₹ {CurrentGoal}</p>
         {showButton && (
           <button onClick={handleGoalAllocate} className="bg-yellow-700 hover:bg-yellow-400 text-white font-semibold py-1 px-2 rounded">Allocate Goal</button>
         )}
       </div>
       <div className="border border-gray-300 p-6 rounded-xl shadow hover:shadow-lg transition duration-300">
         <p className="font-bold text-xl text-yellow-700 capitalize">Savings</p>
-        <p className="my-4 text-gray-800 font-semibold">₹ {AllocatedSavings}</p>
+        <p className="my-4 text-gray-800 font-semibold">₹ {CurrentSavings}</p>
         {showButton && (
           <button onClick={handleSavingsAllocate} className="bg-yellow-700 hover:bg-yellow-400 text-white font-semibold py-1 px-2 rounded">Allocate Savings</button>
         )}

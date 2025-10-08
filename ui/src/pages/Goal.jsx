@@ -26,7 +26,7 @@ const Goal = () => {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.msg || data.error || 'Error Goal expense')
+                throw new Error(data.message || data.error || 'Error Goal expense')
             }
 
             toast.success("Goal added successfully!");

@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { Account } from "../Model/accountSchema.js";
-import cron from "node-cron";
 
 const incomeRoute = Router();
 
@@ -115,8 +114,10 @@ incomeRoute.get('/viewIncomeDetails', async (req, res) => {
       PlannedBudget:totalSetBudget,
       Balance:balance,
       AllocatedGoal: currentIncome.goal,
+      CurrentGoal:currentIncome.remainingGoal,
       TotalSavings: totalSavings || currentIncome.savings,
-      AllocatedSavings: currentIncome.savings
+      AllocatedSavings: currentIncome.savings,
+      CurrentSavings:currentIncome.remainingSavings
     });
 
   } catch (error) {

@@ -22,7 +22,7 @@ const Expense = () => {
                 body:JSON.stringify({
                     Category: category,
                     Expense: amount,
-                    Date: date
+                    expenseDate: date
                 })
             });
 
@@ -30,7 +30,7 @@ const Expense = () => {
             console.log('Response status:', response.status);
             console.log('Response data:', data);
             if (!response.ok) {
-                throw new Error(data.msg || data.error || 'Error adding expense')
+                throw new Error(data.message || data.error || 'Error adding expense')
             }
 
             toast.success("Expense added successfully!");

@@ -9,7 +9,7 @@ const expenseRoute = Router()
 expenseRoute.post('/addExpense', async (req, res) => {
   try {
     const Email = req.email;
-    const { Category, Expense, Date } = req.body;
+    const { Category, Expense, expenseDate } = req.body;
 
     const userAccount = await Account.findOne({ email: Email });
     if (!userAccount) {
@@ -22,7 +22,15 @@ expenseRoute.post('/addExpense', async (req, res) => {
 
     if (!userAccount.expenses) userAccount.expenses = [];
 
-    const expenseMonth = Date.substring(0, 7);
+    const expenseMonth = expenseDate.substring(0, 7);
+    const currentMonth = new Date().toISOString().slice(0, 7);
+
+    if (expenseMonth < currentMonth) {
+      return res.status(400).json({
+        message: "You cannot add an expense for a past month.",
+      });
+    }
+
 
     const monthIncome = userAccount.incomes.find(i => i.month === expenseMonth);
     if (!monthIncome) {
@@ -32,7 +40,7 @@ expenseRoute.post('/addExpense', async (req, res) => {
     userAccount.expenses.push({
       category: Category,
       amount: Number(Expense),
-      date: Date,
+      date: expenseDate,
       month: expenseMonth
     });
 

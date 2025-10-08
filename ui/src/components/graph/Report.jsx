@@ -123,19 +123,30 @@ const Report = ({ monthlyReports, overallReview, suggestions, startMonth, endMon
         <div className="space-y-4">
           {monthlyReports.map((report, index) => (
             <div key={index} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50">
-              <div className="flex justify-between items-center mb-3">
+             <div className="flex justify-between items-center mb-3">
                 <h4 className="font-semibold text-gray-800 text-lg">
                   {formatMonth(report.month)}
                 </h4>
                 <div className="flex gap-2">
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    report.balance >= 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                  }`}>
-                    Balance: ₹{report.balance.toFixed(2)}
+                  <span
+                    className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      report.balance >= 0
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                    }`}
+                  >
+                    {report.balance >= 0
+                      ? `Balance: ₹${report.balance.toFixed(2)}`
+                      : `Overspent: ₹${Math.abs(report.balance).toFixed(2)}`}
                   </span>
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    report.budgetUtilization <= 100 ? 'bg-blue-100 text-blue-800' : 'bg-red-100 text-red-800'
-                  }`}>
+
+                  <span
+                    className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      report.budgetUtilization <= 100
+                        ? "bg-blue-100 text-blue-800"
+                        : "bg-red-100 text-red-800"
+                    }`}
+                  >
                     {report.budgetUtilization.toFixed(0)}% Used
                   </span>
                 </div>

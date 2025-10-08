@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import IncomeCard from './IncomeCard';
 
-const IncomeGrid = ({ refreshFlag, showButton = false }) => {
+const IncomeGrid = ({ showButton = false }) => {
   const [income, setIncome] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [refreshFlag, setRefreshFlag] = useState(0); 
 
   useEffect(() => {
     const fetchIncome = async () => {
@@ -27,7 +28,11 @@ const IncomeGrid = ({ refreshFlag, showButton = false }) => {
 
   return (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-      <IncomeCard incomeData={income}  showButton={showButton}/>
+      <IncomeCard 
+        incomeData={income}  
+        showButton={showButton} 
+        triggerRefresh={() => setRefreshFlag(prev => prev + 1)}
+      />
     </div>
   );
 };

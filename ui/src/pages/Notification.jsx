@@ -9,9 +9,12 @@ const Notification = () => {
     try {
       const res = await fetch("/api/notifications", { credentials: "include" });
       const data = await res.json();
-      setNotifications(data.notifications || []);
+      const sortedNotifications = (data.notifications || []).sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
+      setNotifications(sortedNotifications);
 
-      data.notifications
+      sortedNotifications
         .filter(n => !n.read)
         .forEach(n => toast.info(n.message, { autoClose: 5000 }));
     } catch (err) {

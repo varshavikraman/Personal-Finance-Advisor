@@ -122,7 +122,7 @@ const allocateleftoverAmountToGoals = async (userEmail, monthStr) => {
           });
         } else {
           advises.push({
-            message: `Rs ${allocation} allocated to goal "${goal.goalName}". Progress: ${goal.progress}/${goal.target}`,
+            message: `Rs ${allocation} allocated to goal "${goal.goalName}". Progress: ${Math.min((goal.progress / goal.target) * 100, 100).toFixed(1)}%`,
             createdAt: new Date()
           });
         }
@@ -162,7 +162,7 @@ const allocateleftoverAmountToGoals = async (userEmail, monthStr) => {
 
 goalRoute.post('/reconcileMonth', async (req, res) => {
   try {
-    // const today = new Date();
+     const today = new Date();
     // const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
 
     // if (today.getDate() !== lastDay) {

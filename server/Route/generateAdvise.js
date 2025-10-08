@@ -136,7 +136,7 @@ function generateSuggestions(categoryData, monthlyData, review) {
       type: 'warning',
       title: 'Over Budget',
       message: `You're exceeding your budget by ${(review.budgetUtilization - 100).toFixed(1)}% across all months.`,
-      action: 'Review budget allocations'
+      action: "Check where you're overspending and make small cuts"
     });
   }
 
@@ -145,7 +145,7 @@ function generateSuggestions(categoryData, monthlyData, review) {
       type: 'warning',
       title: 'Low Savings Rate',
       message: `Your average savings rate is ${review.savingsRate.toFixed(1)}%. Aim for at least 10-20%.`,
-      action: 'Look for areas to reduce spending'
+      action: "Look for small ways to cut costs and save more each month"
     });
   }
 
@@ -156,7 +156,7 @@ function generateSuggestions(categoryData, monthlyData, review) {
         type: 'critical',
         title: `${cat.category} Overspending`,
         message: `You've overspent by ₹${cat.overspent.toFixed(2)} in ${cat.category} across all months`,
-        action: 'Adjust budget or reduce spending'
+        action: `Review this ${cat.category} category and adjust future budgets`
       });
     });
   }

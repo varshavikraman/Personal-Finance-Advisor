@@ -14,7 +14,7 @@ savingRoute.post("/addMonthlySavings", async (req, res) => {
     }
 
     const today = new Date();
-    // const monthStr = today.toISOString().substring(0, 7); // "YYYY-MM"
+    const monthStr = today.toISOString().substring(0, 7); 
     // const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
 
     // if (today.getDate() !== lastDay) {

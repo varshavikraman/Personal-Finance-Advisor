@@ -64,7 +64,7 @@ const Budget = () => {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.msg || data.error || 'Error adding expense')
+                throw new Error(data.message || data.error || 'Error adding expense')
             }
 
             toast.success("Budget added successfully!");
