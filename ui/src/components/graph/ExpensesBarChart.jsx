@@ -87,7 +87,6 @@ const ExpensesBarChart = ({ data, month, allocatedBudget = 0, plannedBudget = 0 
             <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4 gap-2">
                 <h3 className="text-lg md:text-xl font-semibold text-gray-800">Expenses for {formattedMonth}</h3>
                 
-                {/* Color Legend */}
                 <div className="flex flex-wrap gap-4">
                     <div className="flex items-center">
                         <div className="h-3 w-6 rounded-sm bg-indigo-500 mr-2"></div>
@@ -141,7 +140,6 @@ const ExpensesBarChart = ({ data, month, allocatedBudget = 0, plannedBudget = 0 
                 </ResponsiveContainer>
             </div>
 
-            {/* Summary Cards */}
             <div className="mt-5 p-4 rounded-lg border border-gray-200 shadow-sm">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="bg-white p-3 rounded-lg border border-gray-200">
@@ -162,7 +160,6 @@ const ExpensesBarChart = ({ data, month, allocatedBudget = 0, plannedBudget = 0 
                 </div>
                 </div>
 
-                {/* Budget Status */}
                 <div className="mt-4 pt-4 border-t border-gray-200">
                 <p className="text-sm font-medium text-gray-700">Budget Status:</p>
                 <p

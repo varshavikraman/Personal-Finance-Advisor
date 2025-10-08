@@ -26,7 +26,7 @@ const Navbar = ({ children }) => {
       if (res.ok) {
         toast.success("Logged out Successfully");
         setTimeout(() => {
-          setUser(null); // clear user from context
+          setUser(null);
           navigate("/", { replace: true });
         }, 3500);
       } else {

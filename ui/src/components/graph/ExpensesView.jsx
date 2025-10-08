@@ -24,7 +24,6 @@ const ExpensesView = () => {
           });
 
           if (!response.ok) {
-            // Handle 404 and other errors gracefully
             setChartData({
               barGraphData: [],
               allocatedBudget: 0,

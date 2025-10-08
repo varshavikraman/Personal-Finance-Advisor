@@ -7,7 +7,7 @@ const notifyRoute = Router()
 notifyRoute.get('/notifications', async (req, res) => {
   try {
     const Email = req.email;
-    const refresh = req.query.refresh === "true"; // check query param
+    const refresh = req.query.refresh === "true"; 
     const userAccount = await Account.findOne({ email: Email });
 
     if (!userAccount) {
@@ -17,10 +17,8 @@ notifyRoute.get('/notifications', async (req, res) => {
     let allAdvises;
 
     if (refresh) {
-      // 🔄 Regenerate financial advises
       allAdvises = await generateFinancialAdvises(userAccount);
     } else {
-      // ⚡ Return from DB directly
       allAdvises = userAccount.advises || [];
     }
 

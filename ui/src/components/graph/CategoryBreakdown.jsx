@@ -9,7 +9,6 @@ const CategoryBreakdown = ({ categoryData, overspendingCategories }) => {
     <div className="mt-8">
       <h3 className="text-lg font-semibold mb-4 text-gray-800">Category Breakdown</h3>
       
-      {/* Overspending Alert */}
       {overspendingCategories.length > 0 && (
         <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
           <h4 className="font-semibold text-red-800 mb-2">⚠️ Overspending Alert</h4>
@@ -28,7 +27,6 @@ const CategoryBreakdown = ({ categoryData, overspendingCategories }) => {
         </div>
       )}
 
-      {/* Category List */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {categoryData.map((category, index) => (
           <div 
@@ -69,7 +67,6 @@ const CategoryBreakdown = ({ categoryData, overspendingCategories }) => {
               )}
             </div>
 
-            {/* Progress Bar */}
             <div className="mt-3">
               <div className="flex justify-between text-xs text-gray-500 mb-1">
                 <span>Spent</span>

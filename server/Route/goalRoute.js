@@ -14,15 +14,12 @@ goalRoute.post('/addGoal', async (req, res) => {
       return res.status(400).json({ message: "Please add income first before adding goals." });
     }
 
-    // Check if the user has any income entries
     if (!userAccount.incomes || userAccount.incomes.length === 0) {
       return res.status(400).json({ message: "Please add income before adding goals." });
     }
 
-    // Initialize goals array if undefined
     userAccount.goals ||= [];
 
-    // Check if goal already exists (case-insensitive)
     const existingGoal = userAccount.goals.find(
       g => g.goalName.toLowerCase() === GoalName.toLowerCase()
     );
@@ -31,7 +28,6 @@ goalRoute.post('/addGoal', async (req, res) => {
       return res.status(400).json({ message: "Goal already exists" });
     }
 
-    // Add new goal
     userAccount.goals.push({
       goalName: GoalName,
       target: Target,
@@ -59,13 +55,11 @@ const allocateleftoverAmountToGoals = async (userEmail, monthStr) => {
       return { advises: [], updatedGoals: [], savings: [], error: "Account not found" };
     }
 
-    // Find the income entry for the given month
     const monthIncome = account.incomes.find(i => i.month === monthStr);
     if (!monthIncome) {
       return { advises: [], updatedGoals: account.goals, savings: account.savings || [], error: `No income found for ${monthStr}` };
     }
 
-    // Pool together leftover budget + remaining goal allocation
     let leftoverAmount = (monthIncome.remainingBudget || 0) + (monthIncome.remainingGoal || 0);
 
     if (leftoverAmount <= 0) {
@@ -76,27 +70,31 @@ const allocateleftoverAmountToGoals = async (userEmail, monthStr) => {
       };
     }
 
-    const activeGoals = account.goals.filter(g => !g.completed);
     const advises = [];
+    let activeGoals = account.goals.filter(g => !g.completed);
 
     if (activeGoals.length === 0) {
-      // Push leftover into savings array
       account.savings ||= [];
-      account.savings.push({
-        amount: leftoverAmount,
-        date: new Date()
-      });
-      monthIncome.remainingBudget = 0; 
-      monthIncome.remainingGoal = 0;   // ✅ clear goal portion too
+      account.savings.push({ amount: leftoverAmount, date: new Date() });
       advises.push({
         message: `Rs ${leftoverAmount} moved to savings (no active goals).`,
         createdAt: new Date()
       });
-    } else {
-      const baseShare = Math.floor(leftoverAmount / activeGoals.length);
-      let remainder = leftoverAmount % activeGoals.length;
+      monthIncome.remainingBudget = 0;
+      monthIncome.remainingGoal = 0;
+      await account.save();
+      return { advises, updatedGoals: account.goals, savings: account.savings };
+    }
+
+    let unallocated = leftoverAmount;
+
+    while (unallocated > 0 && activeGoals.length > 0) {
+      const baseShare = Math.floor(unallocated / activeGoals.length);
+      let remainder = unallocated % activeGoals.length;
 
       for (const goal of activeGoals) {
+        if (unallocated <= 0) break;
+
         let allocation = baseShare;
         if (remainder > 0) {
           allocation += 1;
@@ -104,11 +102,22 @@ const allocateleftoverAmountToGoals = async (userEmail, monthStr) => {
         }
 
         goal.progress += allocation;
-        if (goal.progress >= goal.target) {
+        unallocated -= allocation;
+
+        if (goal.progress > goal.target) {
+          const overflow = goal.progress - goal.target;
           goal.progress = goal.target;
           goal.completed = true;
+          unallocated += overflow; 
+
           advises.push({
-            message: `Goal "${goal.goalName}" completed with this allocation!`,
+            message: `Goal "${goal.goalName}" completed! Rs ${overflow} returned for redistribution.`,
+            createdAt: new Date()
+          });
+        } else if (goal.progress === goal.target) {
+          goal.completed = true;
+          advises.push({
+            message: `Goal "${goal.goalName}" Completed -  target amount Rs.${goal.target} Achieved!`,
             createdAt: new Date()
           });
         } else {
@@ -119,9 +128,20 @@ const allocateleftoverAmountToGoals = async (userEmail, monthStr) => {
         }
       }
 
-      monthIncome.remainingBudget = 0; 
-      monthIncome.remainingGoal = 0;   // ✅ clear goal allocation after use
+      activeGoals = account.goals.filter(g => !g.completed);
     }
+
+    if (unallocated > 0) {
+      account.savings ||= [];
+      account.savings.push({ amount: unallocated, date: new Date() });
+      advises.push({
+        message: `All goals completed! Rs ${unallocated} moved to savings.`,
+        createdAt: new Date()
+      });
+    }
+
+    monthIncome.remainingBudget = 0;
+    monthIncome.remainingGoal = 0;
 
     account.advises ||= [];
     account.advises.push(...advises);
@@ -135,9 +155,10 @@ const allocateleftoverAmountToGoals = async (userEmail, monthStr) => {
     };
   } catch (error) {
     console.error("Error allocating leftover budget:", error);
-    return { advises: [], updatedGoals: [], savings: account.savings || [], error: "Internal error" };
+    return { advises: [], updatedGoals: [], savings: [], error: "Internal error" };
   }
 };
+
 
 goalRoute.post('/reconcileMonth', async (req, res) => {
   try {
@@ -200,7 +221,6 @@ goalRoute.delete('/deleteGoal', async (req, res) => {
 
     const allocatedAmount = userAccount.goals[goalIndex].progress;
 
-    // Remove the goal
     userAccount.goals.splice(goalIndex, 1);
 
     let newAdvises = [];
@@ -232,7 +252,6 @@ goalRoute.delete('/deleteGoal', async (req, res) => {
           createdAt: new Date()
         });
       } else {
-        // Push leftover to savings array instead of adding to number
         userAccount.savings ||= [];
         userAccount.savings.push({
           amount: allocatedAmount,

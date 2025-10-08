@@ -23,7 +23,6 @@ const Report = ({ monthlyReports, overallReview, suggestions, startMonth, endMon
 
   return (
     <div className="mt-8 space-y-6">
-      {/* Range Header */}
       <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-6">
         <h3 className="text-xl font-bold text-gray-800 mb-2">
           📅 Monthly Expense Report: {formatMonth(startMonth)} to {formatMonth(endMonth)}
@@ -33,7 +32,6 @@ const Report = ({ monthlyReports, overallReview, suggestions, startMonth, endMon
         </p>
       </div>
 
-      {/* Overall Financial Health for the RANGE */}
       <div className="bg-white border border-gray-200 rounded-lg p-6">
         <h3 className="text-lg font-semibold text-gray-800 mb-4">📊 Overall Financial Summary</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
@@ -64,7 +62,6 @@ const Report = ({ monthlyReports, overallReview, suggestions, startMonth, endMon
           </div>
         </div>
 
-        {/* Additional Metrics */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           <div className="text-center">
             <p className="text-sm text-gray-600">Budget Usage</p>
@@ -91,7 +88,6 @@ const Report = ({ monthlyReports, overallReview, suggestions, startMonth, endMon
         </div>
       </div>
 
-      {/* Suggestions for the RANGE */}
       {suggestions.length > 0 && (
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">💡 Recommendations for Your Spending</h3>
@@ -122,7 +118,6 @@ const Report = ({ monthlyReports, overallReview, suggestions, startMonth, endMon
         </div>
       )}
 
-      {/* Monthly Breakdown - Show each month in the range */}
       <div className="bg-white border border-gray-200 rounded-lg p-6">
         <h3 className="text-lg font-semibold text-gray-800 mb-4">📅 Monthly Breakdown</h3>
         <div className="space-y-4">
@@ -178,7 +173,6 @@ const Report = ({ monthlyReports, overallReview, suggestions, startMonth, endMon
               </div>
 
 
-              {/* Top 3 Categories for this month */}
               {report.categories.length > 0 && (
                 <div>
                   <p className="text-sm text-gray-600 mb-2">

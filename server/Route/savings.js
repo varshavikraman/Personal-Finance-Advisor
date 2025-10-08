@@ -14,7 +14,7 @@ savingRoute.post("/addMonthlySavings", async (req, res) => {
     }
 
     const today = new Date();
-    const monthStr = today.toISOString().substring(0, 7); // "YYYY-MM"
+    // const monthStr = today.toISOString().substring(0, 7); // "YYYY-MM"
     // const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
 
     // if (today.getDate() !== lastDay) {
@@ -23,22 +23,30 @@ savingRoute.post("/addMonthlySavings", async (req, res) => {
     //   });
     // }
 
-    // 🔹 Find the income for the current month
     const monthlyIncome = userAccount.incomes.find(i => i.month === monthStr);
-
     if (!monthlyIncome) {
       return res.status(400).json({ message: "No income found for this month" });
     }
 
-    const amountToSave = monthlyIncome.remainingSavings > 0 
+    const monthlyBudgets = userAccount.budgets.filter(b => b.month === monthStr);
+    const totalBudgetLimit = monthlyBudgets.reduce((sum, b) => sum + b.limit, 0);
+    const totalSpent = monthlyBudgets.reduce((sum, b) => sum + b.spent, 0);
+
+    let unspentBudget = 0;
+    if (totalBudgetLimit > totalSpent) {
+      unspentBudget = totalBudgetLimit - totalSpent;
+    }
+
+    const incomeRemainingSavings = monthlyIncome.remainingSavings > 0 
       ? monthlyIncome.remainingSavings 
       : monthlyIncome.savings || 0;
+
+    const amountToSave = (incomeRemainingSavings + unspentBudget);
 
     if (amountToSave <= 0) {
       return res.status(400).json({ message: "No savings available to add" });
     }
 
-    // 🔹 Prevent duplicate entry for the same day
     const alreadySavedToday = userAccount.savings.some(
       s => new Date(s.date).toDateString() === today.toDateString()
     );
@@ -46,22 +54,21 @@ savingRoute.post("/addMonthlySavings", async (req, res) => {
       return res.status(400).json({ message: "Savings already added today" });
     }
 
-    // 🔹 Push new savings entry
     userAccount.savings.push({
       amount: amountToSave,
       date: today
     });
 
-    // 🔹 Update advises
+    let message = `₹${amountToSave} moved to savings for ${monthStr}.`;
+    if (unspentBudget > 0) {
+      message += ` Includes ₹${unspentBudget} unspent from your monthly budget.`;
+    }
+
     userAccount.advises = [
       ...(userAccount.advises || []),
-      {
-        message: `₹${amountToSave} moved to savings for ${monthStr}.`,
-        createdAt: today
-      }
+      { message, createdAt: today }
     ];
 
-    // 🔹 Reset that month’s remainingSavings after moving
     monthlyIncome.remainingSavings = 0;
 
     await userAccount.save();
@@ -87,11 +94,10 @@ savingRoute.get('/savingsPieChart', async (req, res) => {
             return res.status(404).json({ message: "User account not found" });
         }
 
-        // Group savings by month
         const savingsByMonth = {};
         
         userAccount.savings.forEach(saving => {
-            const monthKey = saving.date.toISOString().substring(0, 7); // "YYYY-MM"
+            const monthKey = saving.date.toISOString().substring(0, 7); 
             
             if (!savingsByMonth[monthKey]) {
                 savingsByMonth[monthKey] = 0;
@@ -99,7 +105,6 @@ savingRoute.get('/savingsPieChart', async (req, res) => {
             savingsByMonth[monthKey] += saving.amount;
         });
 
-        // Convert to array format for pie chart
         const pieChartData = Object.entries(savingsByMonth).map(([month, amount]) => ({
             name: formatMonthName(month),
             value: amount,
@@ -107,10 +112,8 @@ savingRoute.get('/savingsPieChart', async (req, res) => {
             fullAmount: `₹${amount.toFixed(2)}`
         }));
 
-        // Sort by month (newest first) or by amount (largest first)
         pieChartData.sort((a, b) => b.value - a.value);
 
-        // Calculate total savings
         const totalSavings = pieChartData.reduce((sum, item) => sum + item.value, 0);
 
         res.status(200).json({
@@ -126,7 +129,6 @@ savingRoute.get('/savingsPieChart', async (req, res) => {
     }
 });
 
-// Helper function to format month name
 function formatMonthName(monthString) {
     const [year, month] = monthString.split('-');
     const date = new Date(year, month - 1);
@@ -154,7 +156,6 @@ savingRoute.post("/withdrawFromSavings", async (req, res) => {
 
     let remainingWithdraw = amount;
 
-    // Withdraw from latest savings first
     for (let i = userAccount.savings.length - 1; i >= 0 && remainingWithdraw > 0; i--) {
       if (userAccount.savings[i].amount <= remainingWithdraw) {
         remainingWithdraw -= userAccount.savings[i].amount;
@@ -165,7 +166,6 @@ savingRoute.post("/withdrawFromSavings", async (req, res) => {
       }
     }
 
-    // ✅ Record withdrawal
     userAccount.withdrawals.push({ amount, date: new Date() });
 
     await userAccount.save();
@@ -184,7 +184,7 @@ savingRoute.post("/withdrawFromSavings", async (req, res) => {
 
 savingRoute.get("/savingsSummary", async (req, res) => {
   try {
-    const Email = req.email; // set from authMiddleware
+    const Email = req.email; 
 
     const account = await Account.findOne({ email: Email });
     if (!account) {

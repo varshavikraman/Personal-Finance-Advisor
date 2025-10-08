@@ -16,7 +16,6 @@ budgetRoute.post('/setBudget', async (req, res) => {
       });
     }
 
-    // Find income for the given month
     const monthIncome = userAccount.incomes.find(i => i.month === Month);
 
     if (!monthIncome || monthIncome.amount <= 0) {
@@ -27,7 +26,6 @@ budgetRoute.post('/setBudget', async (req, res) => {
 
     if (!userAccount.budgets) userAccount.budgets = [];
 
-    // Check duplicate budget
     const existingBudget = userAccount.budgets.find(
       b => b.category.toLowerCase().trim() === Category.toLowerCase().trim() && b.month === Month
     );
@@ -37,26 +35,22 @@ budgetRoute.post('/setBudget', async (req, res) => {
 
     let remaining = Limit;
 
-    // Deduct from remainingBudget first
     const deductionFromBudget = Math.min(monthIncome.remainingBudget, remaining);
     monthIncome.remainingBudget -= deductionFromBudget;
     remaining -= deductionFromBudget;
 
-    // Deduct remaining from remainingSavings
     if (remaining > 0) {
       const deductionFromSavings = Math.min(monthIncome.remainingSavings, remaining);
       monthIncome.remainingSavings -= deductionFromSavings;
       remaining -= deductionFromSavings;
     }
 
-    // Deduct remaining from remainingGoal
     if (remaining > 0) {
       const deductionFromGoal = Math.min(monthIncome.remainingGoal, remaining);
       monthIncome.remainingGoal -= deductionFromGoal;
       remaining -= deductionFromGoal;
     }
 
-    // Push the new budget
     userAccount.budgets.push({
       category: Category.trim(),
       limit: Limit,
@@ -101,7 +95,7 @@ budgetRoute.get('/viewAllBudget', async (req, res) => {
 budgetRoute.get('/viewBudgetsByMonth', async (req, res) => {
   try {
     const Email = req.email;
-    const { month } = req.query;  // 🔑 format: "yyyy-MM"
+    const { month } = req.query; 
 
     const userAccount = await Account.findOne({ email: Email });
     if (!userAccount) {
@@ -116,20 +110,17 @@ budgetRoute.get('/viewBudgetsByMonth', async (req, res) => {
       return res.status(404).json({ message: "No budgets found" });
     }
 
-    // ✅ Filter budgets for requested month
     const monthlyBudgets = userAccount.budgets.filter(b => b.month === month);
 
     if (monthlyBudgets.length === 0) {
       return res.status(404).json({ message: `No budgets found for ${month}` });
     }
 
-    // ✅ Get total income budget for that month
     const monthIncome = userAccount.incomes.find(i => i.month === month);
 
     const totalPlannedBudget = monthIncome ? monthIncome.budget : 0;
     const remainingBudget = monthIncome ? monthIncome.remainingBudget : 0;
 
-    // ✅ Prepare chart data
     const chartData = monthlyBudgets.map(budget => ({
       name: budget.category,
       value: budget.limit,

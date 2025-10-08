@@ -2,20 +2,17 @@ const generateFinancialAdvises = async (userAccount, monthStr) => {
   try {
     const newAdvises = [];
 
-    // Find income for the given month
     const monthIncome = userAccount.incomes.find(i => i.month === monthStr);
     if (!monthIncome) {
       return userAccount.advises || [];
     }
 
-    // Budgets for the given month
     const monthlyBudgets = userAccount.budgets.filter(b => b.month === monthStr);
 
     const totalBudgetSet = monthlyBudgets.reduce((sum, b) => sum + b.limit, 0);
     const totalSpent = monthlyBudgets.reduce((sum, b) => sum + b.spent, 0);
     const incomeBudget = monthIncome.budget || 0;
 
-    // 🔴 Check if user allocated more budget than income allows
     if (totalBudgetSet > incomeBudget) {
       newAdvises.push({
         message: `Alert! Your total budgets (Rs ${totalBudgetSet}) exceed your allocated budget (Rs ${incomeBudget}).`,
@@ -23,16 +20,21 @@ const generateFinancialAdvises = async (userAccount, monthStr) => {
       });
     }
 
-    // 🔴 Spending % feedback
     if (totalBudgetSet > 0) {
       const spendPercent = (totalSpent / totalBudgetSet) * 100;
+
+      const today = new Date();
+      const totalDays = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+      const currentDay = today.getDate();
+      const monthProgress = (currentDay / totalDays) * 100;
 
       if (spendPercent > 80) {
         newAdvises.push({
           message: `Alert! You are approaching budget limits! You have used Rs ${totalSpent} of Rs ${totalBudgetSet}.`,
           createdAt: new Date()
         });
-      } else if (spendPercent < 50) {
+      } 
+      else if (monthProgress > 80 && spendPercent < 50) {
         newAdvises.push({
           message: `Great! You are saving well. Only Rs ${totalSpent} spent out of Rs ${totalBudgetSet}.`,
           createdAt: new Date()
@@ -40,7 +42,7 @@ const generateFinancialAdvises = async (userAccount, monthStr) => {
       }
     }
 
-    // 🔴 Per-category overspending checks
+
     monthlyBudgets.forEach(budget => {
       if (budget.spent > budget.limit) {
         const overspent = budget.spent - budget.limit;
@@ -57,7 +59,6 @@ const generateFinancialAdvises = async (userAccount, monthStr) => {
       }
     });
 
-    // 🔴 Goal achievements
     userAccount.goals.forEach(goal => {
       if (goal.completed) {
         newAdvises.push({
@@ -67,7 +68,6 @@ const generateFinancialAdvises = async (userAccount, monthStr) => {
       }
     });
 
-    // 🔴 Avoid duplicate messages
     const existingMessages = new Set((userAccount.advises || []).map(a => a.message));
     const uniqueNewAdvises = newAdvises.filter(a => !existingMessages.has(a.message));
 

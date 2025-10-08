@@ -1,11 +1,9 @@
-// In your main dashboard or savings page
 import React, {useState} from 'react'
 
 import SavingsPieChart from './SavingsPieChart';
 
 const SavingsView = () => {
 
-    // Call this function from withdrawal/deposit components after successful API calls
     const triggerRefresh = () => {
         setRefreshFlag(prev => prev + 1);
     };
@@ -15,7 +13,6 @@ const SavingsView = () => {
             <h1 className="text-xl font-bold text-center text-yellow-700 mb-4">Savings Overview</h1>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Pie Chart */}
                 <div className="lg:col-span-2">
                     <SavingsPieChart />
                 </div>

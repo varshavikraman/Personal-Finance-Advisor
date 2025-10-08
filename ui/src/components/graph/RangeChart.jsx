@@ -9,7 +9,6 @@ const RangeChart = ({ data, start, end, totalSpent, totalPlannedBudget, totalAll
       return date.toLocaleString("default", { month: "short", year: "numeric" }); 
     };
 
-    // Custom tooltip 
     const CustomTooltip = ({ active, payload, label }) => {
       if (active && payload && payload.length) {
         return (
@@ -21,9 +20,6 @@ const RangeChart = ({ data, start, end, totalSpent, totalPlannedBudget, totalAll
       } 
       return null; 
     };
-
-    const totalExpenses = data.reduce((sum, item) => sum + item.expenseAmount, 0).toFixed(2); 
-    const totalBudgetSum = data.reduce((sum, item) => sum + item.budgetLimit, 0).toFixed(2);
 
     return ( 
       <div className="w-full"> 
@@ -41,7 +37,6 @@ const RangeChart = ({ data, start, end, totalSpent, totalPlannedBudget, totalAll
           </ResponsiveContainer> 
         </div> 
         
-        {/* Summary */} 
         <div className="mt-4 grid grid-cols-1 md:grid-cols-5 gap-4"> 
           <div className="p-3 bg-white border rounded shadow-sm"> 
             <p className="text-sm text-gray-500">Total Expenses</p> 

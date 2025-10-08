@@ -5,7 +5,7 @@ const Savings = () => {
   const [withdrawAmount, setWithdrawAmount] = useState('');
   const [loading, setLoading] = useState(false);
   const [balanceLoading, setBalanceLoading] = useState(true);
-  const [savingsBalance, setSavingsBalance] = useState(null); // ✅ added state
+  const [savingsBalance, setSavingsBalance] = useState(null); 
 
   const handleWithdraw = async (e) => {
   e.preventDefault();
@@ -32,7 +32,7 @@ const Savings = () => {
     toast.success(`Successfully withdrew ₹${amount.toFixed(2)} from savings!`);
 
     setWithdrawAmount('');
-    fetchSavingsBalance(); // ✅ refresh balance
+    fetchSavingsBalance();
 
 
   } catch (error) {
@@ -70,7 +70,6 @@ const Savings = () => {
 
   return (
     <>
-      {/* Withdraw Card */}
       <div className="max-w-xl mx-auto flex-1 border border-gray-300 p-4 md:p-8 rounded-lg shadow-md mt-10">
         <h3 className="text-2xl text-yellow-600 font-semibold mb-4 text-center">
           Withdraw from Savings
@@ -118,7 +117,6 @@ const Savings = () => {
         </form>
       </div>
 
-      {/* Balance Summary */}
       {!balanceLoading && savingsBalance && (
         <div className="mt-6 p-4 rounded-lg">
           <div className="flex justify-center">
@@ -138,7 +136,6 @@ const Savings = () => {
             </div>
           </div>
 
-          {/* Withdrawal History */}
             {savingsBalance.withdrawalHistory.length > 0 && (
                 <div className="mt-6">
                     <h4 className="text-sm font-semibold text-gray-700 mb-3">Withdrawal History</h4>

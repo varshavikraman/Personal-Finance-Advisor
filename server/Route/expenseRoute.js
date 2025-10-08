@@ -22,16 +22,13 @@ expenseRoute.post('/addExpense', async (req, res) => {
 
     if (!userAccount.expenses) userAccount.expenses = [];
 
-    // 🔑 Extract month from expense date (format yyyy-MM)
     const expenseMonth = Date.substring(0, 7);
 
-    // ✅ Find income for this month
     const monthIncome = userAccount.incomes.find(i => i.month === expenseMonth);
     if (!monthIncome) {
       return res.status(400).json({ message: "No income set for this month. Please add income first." });
     }
 
-    // ✅ Add expense entry
     userAccount.expenses.push({
       category: Category,
       amount: Number(Expense),
@@ -39,7 +36,6 @@ expenseRoute.post('/addExpense', async (req, res) => {
       month: expenseMonth
     });
 
-    // ✅ Update corresponding budget
     const budget = userAccount.budgets.find(
       b => b.category.toLowerCase() === Category.toLowerCase().trim() && b.month === expenseMonth
     );
@@ -51,29 +47,24 @@ expenseRoute.post('/addExpense', async (req, res) => {
       if (budget.spent > budget.limit) {
         let overspent = budget.spent - budget.limit;
 
-        // Deduct from remainingBudget first
         const deductionFromBudget = Math.min(overspent, monthIncome.remainingBudget);
         monthIncome.remainingBudget -= deductionFromBudget;
         overspent -= deductionFromBudget;
 
-        // Deduct from remainingSavings next
         const deductionFromSavings = Math.min(overspent, monthIncome.remainingSavings);
         monthIncome.remainingSavings -= deductionFromSavings;
         overspent -= deductionFromSavings;
 
-        // Deduct from remainingGoal last
         const deductionFromGoal = Math.min(overspent, monthIncome.remainingGoal);
         monthIncome.remainingGoal -= deductionFromGoal;
         overspent -= deductionFromGoal;
 
-        // Update budget overspent info
         budget.overspent = overspent;
         budget.overspentFromAllocatedBudget = deductionFromBudget;
         budget.overspentFromSavings = deductionFromSavings;
         budget.overspentFromGoals = deductionFromGoal;
 
       } else {
-        // Reset overspent if within budget
         budget.overspent = 0;
         budget.overspentFromAllocatedBudget = 0;
         budget.overspentFromSavings = 0;
@@ -83,7 +74,6 @@ expenseRoute.post('/addExpense', async (req, res) => {
 
     await userAccount.save();
 
-    // 🔑 Generate financial advises (make sure this works with incomes[])
     const advises = await generateFinancialAdvises(userAccount);
 
     res.status(201).json({
@@ -103,8 +93,6 @@ expenseRoute.post('/addExpense', async (req, res) => {
     res.status(500).json({ Error: 'Internal Server Error' });
   }
 });
-
-
 
 expenseRoute.get('/viewAllExpenses', async (req, res) => {
   try {
@@ -230,7 +218,6 @@ expenseRoute.get('/viewExpensesByRange', async (req, res) => {
     const userAccount = await Account.findOne({ email: Email });
     if (!userAccount) return res.status(404).json({ message: "User account not found" });
 
-    // Filter expenses in the range
     const filteredExpenses = userAccount.expenses.filter(exp => {
       const expDate = new Date(exp.date);
       return expDate >= startDate && expDate <= endDate;
@@ -247,13 +234,11 @@ expenseRoute.get('/viewExpensesByRange', async (req, res) => {
       });
     }
 
-    // Group expenses by month and category
     const expensesByMonth = {};
     const expensesByCategory = {};
     const monthlyBudgets = {};
     const monthlyIncomes = {};
 
-    // Prepare budgets and incomes per month for the range
     userAccount.budgets.forEach(b => {
       const [year, month] = b.month.split("-").map(Number);
       const budgetDate = new Date(year, month - 1, 1);
@@ -263,7 +248,6 @@ expenseRoute.get('/viewExpensesByRange', async (req, res) => {
       monthlyBudgets[b.month][b.category] = b.limit;
     });
 
-    // Get income for months in range
     userAccount.incomes.forEach(i => {
       const [year, month] = i.month.split("-").map(Number);
       const incomeDate = new Date(year, month - 1, 1);
@@ -271,19 +255,17 @@ expenseRoute.get('/viewExpensesByRange', async (req, res) => {
         monthlyIncomes[i.month] = {
           amount: i.amount,
           manageIncome: i.manageIncome,
-          allocatedBudget: i.budget,      // ✅ from income’s planned allocation
-          allocatedGoal: i.goal,          // optional: add goal
-          allocatedSavings: i.savings     // optional: add savings
+          allocatedBudget: i.budget,      
+          allocatedGoal: i.goal,          
+          allocatedSavings: i.savings     
         };
       }
     });
 
-    // Process each expense
     filteredExpenses.forEach(exp => {
       const monthKey = exp.month;
       const category = exp.category;
 
-      // Monthly data
       if (!expensesByMonth[monthKey]) {
         expensesByMonth[monthKey] = { 
           expenseAmount: 0, 
@@ -299,7 +281,6 @@ expenseRoute.get('/viewExpensesByRange', async (req, res) => {
         expensesByMonth[monthKey].budgetLimit = Object.values(monthlyBudgets[monthKey]).reduce((a, b) => a + b, 0);
       }
 
-      // Category data
       if (!expensesByCategory[category]) {
         expensesByCategory[category] = { 
           totalSpent: 0, 
@@ -312,14 +293,12 @@ expenseRoute.get('/viewExpensesByRange', async (req, res) => {
       expensesByCategory[category].expenseCount += 1;
       expensesByCategory[category].budgetLimit += monthlyBudgets[monthKey] && monthlyBudgets[monthKey][category] ? monthlyBudgets[monthKey][category] : 0;
       
-      // Monthly breakdown per category
       if (!expensesByCategory[category].monthlyBreakdown[monthKey]) {
         expensesByCategory[category].monthlyBreakdown[monthKey] = 0;
       }
       expensesByCategory[category].monthlyBreakdown[monthKey] += exp.amount;
     });
 
-    // Calculate averages and percentages
     const totalSpentAll = filteredExpenses.reduce((sum, exp) => sum + exp.amount, 0);
     Object.keys(expensesByCategory).forEach(category => {
       const monthsWithData = Object.keys(expensesByCategory[category].monthlyBreakdown).length;
@@ -331,7 +310,6 @@ expenseRoute.get('/viewExpensesByRange', async (req, res) => {
         : 0;
     });
 
-    // Prepare data arrays
     const barGraphData = Object.entries(expensesByMonth)
       .map(([month, data]) => ({ 
         month, 
@@ -346,7 +324,6 @@ expenseRoute.get('/viewExpensesByRange', async (req, res) => {
       .map(([category, data]) => ({ category, ...data }))
       .sort((a, b) => b.totalSpent - a.totalSpent);
 
-    // Generate monthly reports for EACH month in the range
     const monthlyReports = barGraphData.map(monthData => {
       const monthKey = monthData.month;
 
@@ -359,15 +336,14 @@ expenseRoute.get('/viewExpensesByRange', async (req, res) => {
         }))
         .sort((a, b) => b.spent - a.spent);
 
-      // ✅ Calculate allocated budget for that month
       const allocatedBudget = monthlyIncomes[monthKey]?.allocatedBudget || 0;
 
       return {
         month: monthKey,
         totalSpent: monthData.expenseAmount,
         totalBudget: monthData.budgetLimit,
-        allocatedBudget,  // ✅ new field
-        income: monthlyIncomes[monthKey]?.amount || 0, // ✅ corrected
+        allocatedBudget,  
+        income: monthlyIncomes[monthKey]?.amount || 0, 
         balance: allocatedBudget - monthData.expenseAmount,
         categories: monthCategories,
         topSpendingCategory: monthCategories[0]?.category || 'None',
@@ -376,7 +352,6 @@ expenseRoute.get('/viewExpensesByRange', async (req, res) => {
       };
     });
 
-    // Generate overall review and suggestions for the ENTIRE range
     const overallReview = generateOverallReview(barGraphData, categoryData, filteredExpenses);
     const suggestions = generateSuggestions(categoryData, barGraphData, overallReview);
 
@@ -384,9 +359,7 @@ expenseRoute.get('/viewExpensesByRange', async (req, res) => {
     const totalPlannedBudget = barGraphData.reduce((sum, m) => sum + m.budgetLimit, 0);
     const totalIncome = barGraphData.reduce((sum, m) => sum + m.income, 0);
     const totalAllocatedBudget = Object.values(monthlyIncomes)
-        .reduce((sum, i) => sum + (i.allocatedBudget || 0), 0);
-    console.log(monthlyReports);
-    
+        .reduce((sum, i) => sum + (i.allocatedBudget || 0), 0);    
 
     res.status(200).json({
       message: `Expenses from ${start} to ${end}`,
@@ -397,9 +370,9 @@ expenseRoute.get('/viewExpensesByRange', async (req, res) => {
       totalIncome,
       barGraphData,
       categoryData,
-      monthlyReports, // This contains report for EACH month
-      overallReview,  // This contains review for ENTIRE range
-      suggestions,    // Suggestions for ENTIRE range
+      monthlyReports, 
+      overallReview,  
+      suggestions,    
       overspendingCategories: categoryData.filter(c => c.overspent > 0)
     });
 

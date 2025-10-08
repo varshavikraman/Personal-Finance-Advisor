@@ -30,7 +30,7 @@ app.use('/',authenticate, goalRoute)
 app.use('/',authenticate, savingRoute)
 app.use('/',authenticate, notifyRoute)
 
-mongoose.connect("mongodb://localhost:27017/SaveSage").then(() => {
+mongoose.connect("mongodb://mongodb:27017/SaveSage").then(() => {
         console.log("MongoDB is connected successfully to SaveSage");
     })
     .catch((error) => {

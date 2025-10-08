@@ -4,18 +4,16 @@ import {model}  from "mongoose";
 const accountSchema = new Schema({
     email: { type: String, required: true, unique: true },
     incomes: [{
-        month: { type: String, required: true },  // "2025-09"
+        month: { type: String, required: true },
         amount: { type: Number, required: true },
         manageIncome: { 
             type: String, 
             enum: ["50/30/20", "60/20/20", "70/10/20"], 
             required: true 
         },
-        // Planned allocations (from split rule)
         budget: { type: Number, default: 0 },
         goal: { type: Number, default: 0 },
         savings: { type: Number, default: 0 },
-        // Remaining allocations (after expenses/overspends)
         remainingBudget: { type: Number, default: 0 },
         remainingGoal: { type: Number, default: 0 },
         remainingSavings: { type: Number, default: 0 }
@@ -44,7 +42,7 @@ const accountSchema = new Schema({
         amount: { type: Number, required: true }, 
         date: { type: Date, default: Date.now } 
     }],
-     withdrawals: [{
+    withdrawals: [{
         amount: { type: Number, required: true },
         date: { type: Date, default: Date.now }
     }],
@@ -55,6 +53,6 @@ const accountSchema = new Schema({
     },] 
 })
 
-const Account = model('Account', accountSchema)
+const Account = model('account', accountSchema)
 
 export { Account }

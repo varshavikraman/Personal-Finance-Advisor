@@ -21,14 +21,13 @@ const router = createBrowserRouter([
   {
     element: <AuthLayout />,
     children: [
-      {index:true, element:<Landing />}, // "/"
-      {path: "signup", element: <Signup />},  // "/sign-up"
+      {index:true, element:<Landing />},
+      {path: "signup", element: <Signup />},
       {path: "login", element: <Login />},
       {path: "*", element: <NotFoundPage />},
     ],
   },
   {
-    // Wrap MainLayout with ProtectedRoute
     element: (
       <ProtectedRoute>
         <MainLayout />

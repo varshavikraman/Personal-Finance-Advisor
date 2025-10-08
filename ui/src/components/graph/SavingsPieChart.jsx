@@ -1,4 +1,3 @@
-// components/SavingsPieChart.js
 import React, { useState, useEffect } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
@@ -38,7 +37,6 @@ const SavingsPieChart = () => {
         fetchSavingsData();
     }, []);
 
-    // Custom Tooltip
     const CustomTooltip = ({ active, payload }) => {
         if (active && payload && payload.length) {
             const data = payload[0].payload;
@@ -55,9 +53,8 @@ const SavingsPieChart = () => {
         return null;
     };
 
-    // Custom Label
     const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, name }) => {
-        if (percent < 0.05) return null; // Don't show label for very small slices
+        if (percent < 0.05) return null;
         
         const RADIAN = Math.PI / 180;
         const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
@@ -126,7 +123,6 @@ const SavingsPieChart = () => {
 
     return (
         <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-            {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
                 <div>
                     <h3 className="text-lg font-semibold text-gray-800">Monthly Savings</h3>
@@ -143,7 +139,6 @@ const SavingsPieChart = () => {
                 </div>
             </div>
 
-            {/* Pie Chart */}
             <div className="h-80">
                 <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
@@ -186,7 +181,6 @@ const SavingsPieChart = () => {
                 </ResponsiveContainer>
             </div>
 
-            {/* Summary Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-200">
                 <div className="text-center">
                     <p className="text-2xl font-bold text-green-600">

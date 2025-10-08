@@ -1,16 +1,12 @@
 import React from "react";
-import useProfile from "../hooks/useProfile";
 import ExpensesRangeView from "../components/graph/ExpenseRangeView";
 import ExpensesView from "../components/graph/ExpensesView";
 import IncomeGrid from "../components/IncomeGrid";
-import { Link } from "react-router-dom";
 import SavingsView from "../components/graph/SavingsView";
 import { useAuth } from "../context/AuthContext";
-import ProtectedRoute from "../components/ProtectedRoute";
 
 
 const Home = () => {
-  //const { profile, loading } = useProfile();
   const { user, loading } = useAuth();
 
   if (loading) {

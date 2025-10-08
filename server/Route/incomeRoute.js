@@ -16,24 +16,20 @@ incomeRoute.post('/addIncome', async (req, res) => {
 
     const currentMonth = new Date().toISOString().substring(0, 7);
 
-    // Check if income already exists for this month
     const existingIncome = userAccount.incomes.find(i => i.month === currentMonth);
     if (existingIncome) {
       return res.status(400).json({ msg: "Income already exists for this month" });
     }
 
-    // Split percentages
     const [budgetPercent, goalPercent, savingPercent] = ManageIncome.split("/").map(Number);
     if (![budgetPercent, goalPercent, savingPercent].every(n => !isNaN(n))) {
       return res.status(400).json({ msg: "Invalid ManageIncome format. Use '50/30/20' style." });
     }
 
-    // Calculate amounts
     const budgetAmount = (Amount * budgetPercent) / 100;
     const goalAmount = (Amount * goalPercent) / 100;
     const savingAmount = (Amount * savingPercent) / 100;
 
-    // Push new month’s income
     userAccount.incomes.push({
       month: currentMonth,
       amount: Amount,
@@ -69,16 +65,13 @@ incomeRoute.get('/viewIncomeDetails', async (req, res) => {
 
     const currentMonth = new Date().toISOString().substring(0, 7);
 
-    // 🔑 Find income for current month
     let currentIncome = userAccount.incomes.find(i => i.month === currentMonth);
 
-    // ⚡ Auto-carry forward if missing and recalculate allocations
     if (!currentIncome && userAccount.incomes.length > 0) {
       const lastIncome = userAccount.incomes[userAccount.incomes.length - 1];
       const amount = lastIncome.amount;
       const manageIncome = lastIncome.manageIncome;
 
-      // Split percentages and recalc
       const [budgetPercent, goalPercent, savingPercent] = manageIncome.split("/").map(Number);
       const budgetAmount = (amount * budgetPercent) / 100;
       const goalAmount = (amount * goalPercent) / 100;
@@ -105,7 +98,6 @@ incomeRoute.get('/viewIncomeDetails', async (req, res) => {
       return res.status(200).json({ message: "No income set yet", data: null });
     }
 
-    // calculate total savings
     const totalSavings = userAccount.savings?.reduce((sum, s) => sum + (s.amount || 0), 0) || 0;
 
     const totalSetBudget = userAccount.budgets
@@ -145,10 +137,8 @@ incomeRoute.put('/updateIncome', async (req, res) => {
 
     const currentMonth = new Date().toISOString().substring(0, 7);
 
-    // 🔑 Find income for current month
     let currentIncome = userAccount.incomes.find(i => i.month === currentMonth);
 
-    // If income for current month doesn't exist, optionally create it
     if (!currentIncome) {
       currentIncome = {
         month: currentMonth,
@@ -164,7 +154,6 @@ incomeRoute.put('/updateIncome', async (req, res) => {
       userAccount.incomes.push(currentIncome);
     }
 
-    // Split percentages and recalc
     const [budgetPercent, goalPercent, savingPercent] = ManageIncome.split("/").map(Number);
     if (![budgetPercent, goalPercent, savingPercent].every(n => !isNaN(n))) {
       return res.status(400).json({ msg: "Invalid ManageIncome format. Use '50/30/20' style." });
@@ -174,7 +163,6 @@ incomeRoute.put('/updateIncome', async (req, res) => {
     const goalAmount = (Amount * goalPercent) / 100;
     const savingAmount = (Amount * savingPercent) / 100;
 
-    // Update current month income
     currentIncome.amount = Amount;
     currentIncome.manageIncome = ManageIncome;
     currentIncome.budget = budgetAmount;

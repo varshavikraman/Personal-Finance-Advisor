@@ -49,16 +49,14 @@ const ExpensesRangeView = () => {
     fetchExpenseData();
   }, [range]);
 
-  // Calculate total budget from all selected months
   const totalBudgetSum = expenseData?.barGraphData?.reduce((sum, month) => sum + month.budgetLimit, 0) || 0;
 
   return (
     <div className="max-w-6xl mx-4 md:mx-20 grid gap-6 grid-cols-1 px-4 py-10 border border-gray-300 rounded-lg shadow-md mb-5 lg:mb-10">
       <h2 className="text-xl font-bold text-center text-yellow-700 mb-4">
-        Expense Overview (Range)
+        Expense Overview
       </h2>
 
-      {/* Range filter with clear button */}
       <div className="flex flex-col lg:flex-row lg:items-end gap-4">
         <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <div className="flex-1">
@@ -93,7 +91,6 @@ const ExpensesRangeView = () => {
         </div>
       </div>
 
-      {/* Quick Stats */}
       {(range.start || range.end) && (
         <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 sm:p-4">
@@ -138,7 +135,6 @@ const ExpensesRangeView = () => {
         </div>
       )}
 
-      {/* Loading State */}
       {loading && (
         <div className="text-center py-8 sm:py-12 lg:py-16">
           <div className="inline-block animate-spin rounded-full h-8 w-8 sm:h-10 sm:w-10 border-b-2 border-blue-500 mb-3 sm:mb-4"></div>
@@ -147,7 +143,6 @@ const ExpensesRangeView = () => {
         </div>
       )}
 
-      {/* Empty State - No Range Selected */}
       {!loading && (!range.start || !range.end) && (
         <div className="text-center py-8 sm:py-12 lg:py-16 bg-gray-50 rounded-xl border border-gray-200">
           <div className="text-3xl sm:text-4xl lg:text-5xl mb-3 sm:mb-4">📅</div>
@@ -160,7 +155,6 @@ const ExpensesRangeView = () => {
         </div>
       )}
 
-      {/* Empty State - No Data Found */}
       {!loading && range.start && range.end && !expenseData && (
         <div className="text-center py-8 sm:py-12 lg:py-16 bg-gray-50 rounded-xl border border-gray-200">
           <div className="text-3xl sm:text-4xl lg:text-5xl mb-3 sm:mb-4">📊</div>
@@ -173,10 +167,8 @@ const ExpensesRangeView = () => {
         </div>
       )}
 
-      {/* Data Display */}
       {!loading && expenseData && (
         <div className="space-y-6 sm:space-y-8 lg:space-y-10">
-          {/* Range Chart */}
           <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
             <RangeChart
               data={expenseData.barGraphData || []}
@@ -188,7 +180,6 @@ const ExpensesRangeView = () => {
             />
           </div>
           
-          {/* Category Breakdown */}
           {expenseData.categoryData && expenseData.categoryData.length > 0 && (
             <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
               <CategoryBreakdown 
@@ -198,7 +189,6 @@ const ExpensesRangeView = () => {
             </div>
           )}
           
-          {/* Monthly Report */}
           {expenseData.monthlyReports && expenseData.monthlyReports.length > 0 && (
             <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
               <Report 
