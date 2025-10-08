@@ -42,7 +42,7 @@ It combines automation, data visualization, and financial insights to help users
 1. **Navigate to the Project Directory:**  
 
     ```bash
-        cd SaveSage-Personal-Finance-Advisor
+        cd SaveSage:Personal-Finance-Advisor
     ```
 
 3. **Set up environment variables:** 
