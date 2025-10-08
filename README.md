@@ -49,7 +49,7 @@ Make sure you have Docker installed on your system
     ```bash
         cd SaveSage:Personal-Finance-Advisor
     ```
-
+    
 3. **Set up environment variables:** 
  
    - Create a `.env` file inside the `server` folder.  
@@ -62,7 +62,6 @@ Make sure you have Docker installed on your system
 
         NODE_ENV=production
     ```
- 
 
 4. **Docker Setup:** 
 
