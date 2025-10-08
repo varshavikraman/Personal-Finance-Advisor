@@ -36,7 +36,7 @@ It combines automation, data visualization, and financial insights to help users
 1. **Clone the Repository:**  
 
     ```bash
-        git clone git@github.com:varshavikraman/Personal-Finance-Advisor.git
+        git@github.com:varshavikraman/Personal-Finance-Advisor.git
     ```
 
 1. **Navigate to the Project Directory:**  
