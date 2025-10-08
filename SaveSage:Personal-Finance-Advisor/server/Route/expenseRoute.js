@@ -31,10 +31,19 @@ expenseRoute.post('/addExpense', async (req, res) => {
       });
     }
 
-
     const monthIncome = userAccount.incomes.find(i => i.month === expenseMonth);
     if (!monthIncome) {
       return res.status(400).json({ message: "No income set for this month. Please add income first." });
+    }
+
+    const budgetCheck = userAccount.budgets.find(
+      b => b.category.toLowerCase() === Category.toLowerCase().trim() && b.month === expenseMonth
+    );
+
+    if (!budgetCheck) {
+      return res.status(400).json({
+        message: `Cannot add expense. No budget set for category "${Category}" in this month.`,
+      });
     }
 
     userAccount.expenses.push({

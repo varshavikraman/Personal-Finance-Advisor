@@ -31,7 +31,7 @@ const IncomeUpdate = () => {
             if (!response.ok) {
                 throw new Error(data.msg || data.error || 'Error adding income');
             } else {
-                toast.success("Income added successfully!");
+                toast.success("Income updated successfully!");
                 setAmount('');
                 setManageIncome('50/30/20');
 

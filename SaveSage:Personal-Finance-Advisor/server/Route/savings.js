@@ -47,12 +47,12 @@ savingRoute.post("/addMonthlySavings", async (req, res) => {
       return res.status(400).json({ message: "No savings available to add" });
     }
 
-    const alreadySavedToday = userAccount.savings.some(
-      s => new Date(s.date).toDateString() === today.toDateString()
-    );
-    if (alreadySavedToday) {
-      return res.status(400).json({ message: "Savings already added today" });
-    }
+    // const alreadySavedToday = userAccount.savings.some(
+    //   s => new Date(s.date).toDateString() === today.toDateString()
+    // );
+    // if (alreadySavedToday) {
+    //   return res.status(400).json({ message: "Savings already added today" });
+    // }
 
     userAccount.savings.push({
       amount: amountToSave,
